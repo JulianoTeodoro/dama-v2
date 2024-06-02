@@ -5,7 +5,6 @@ function atualizarHorario() {
     xhr.open("GET", "http://localhost/damav2/horario.php", true)
     xhr.onreadystatechange = function() {
         if (xhr.readyState == 3) {
-            console.log("Carregando conteudo");
         }
 
         if(xhr.readyState == 4) {

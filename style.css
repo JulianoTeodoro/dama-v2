@@ -1,30 +1,40 @@
-.posicao {
-    position: absolute;
-    align-items: center;
-}
 /* Estilizando o tabuleiro */
 #tabuleiro {
     display: grid;
     grid-template-columns: repeat(8, 1fr);
     width: 640px;
     height: 640px;
-    border: 2px solid black;
+    border: 20px solid #8b0000;
     margin: 20px auto;
+    gap: 0; /* Remove qualquer espaço entre as casas */
 }
 
+/* Estilizando os jogadores */
 #jogador1 {
-    background-color: black;
-    color:aliceblue;
-}
+    background-color: white;
+    color: black;
+    padding: 10px;
+    text-align: center;
+    margin: 10px auto;
+    width: fit-content;
+    font-weight: bold;
 
+}
 
 #jogador2 {
     background-color: red;
-    color:aliceblue;
+    color: aliceblue;
+    padding: 10px;
+    text-align: center;
+    margin: 10px auto;
+    width: fit-content;
+    font-weight: bold;
+
 }
 
 .jogadorSelecionado {
     border: 5px solid green;
+    border-radius: 10px;
 }
 
 /* Estilizando as casas do tabuleiro */
@@ -34,14 +44,24 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
 }
 
 .preta {
-    background-color: #8B4513;
+    background-color: black;
 }
 
 .branca {
     background-color: #F5F5F5;
+}
+
+/* Estilizando a posição */
+.posicao {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
 }
 
 /* Estilizando as peças */
@@ -50,7 +70,11 @@
     height: 60px;
     border-radius: 50%;
     cursor: pointer;
-    z-index: 1000;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.3s ease;
 }
 
 .peca.vermelha {
@@ -58,8 +82,60 @@
 }
 
 .peca.preta {
-    background-color: black;
+    background-color: white;
 }
+
 .peca.selecionada {
-    border: solid green 5px;
+    border: 5px solid green;
+    transform: scale(1.1);
+}
+
+#placar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #003366; /* Cor azul escura */
+    color: white;
+    padding: 10px 40px;
+    border-radius: 10px;
+    width: 300px;
+    font-size: 24px;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: fixed;
+    top: 680px; /* Abaixo do placar */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000; /* Certifique-se de que o horário esteja acima de outros elementos */
+}
+
+#horario {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+#voltarInicio {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: black;
 }
