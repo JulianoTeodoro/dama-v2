@@ -76,11 +76,22 @@ class Jogo{
 
     aumentaPlacar(jogador) {
         if(jogador === this.jogadorPretas) {
+            if(this.jogadorPretas.pecaSelecionada.pecaCapturada)
             this.placar.jogadorPretas++
         } else if(jogador === this.jogadorVermelhas) {
             this.placar.jogadorVermelhas++
         }
         this.atualizaPlacar();
+
+        if(this.jogadorVermelhas.placar == 12) {
+            alert(`Time vermelho venceu!! Placar: Vermelhas: ${this.jogadorVermelhas.placar} / Pretas: ${this.jogadorPretas.placar}`);
+            location.reload()
+        }  
+        if (this.jogadorPretas.placar == 12){
+            alert(`Time preto venceu!! Placar: Pretas: ${this.jogadorPretas.placar} / Pretas: ${this.jogadorVermelhas.placar}`);
+            location.reload()
+
+        }
         
     }
 }
@@ -145,6 +156,7 @@ class Casa{
                     const pecaCapturada = pecaSelecionada.pecaCapturada;
                     if(pecaSelecionada.jogadorDonoDaPeca.cor === pecaCapturada.jogadorDonoDaPeca.cor) {
                         alert("Movimento invalido");
+
                         pecaSelecionada.pecaCapturada = null;
                         pecaCapturada.casa.peca = null;
                     } else {
@@ -153,15 +165,23 @@ class Casa{
                         this.tabuleiro.jogo.aumentaPlacar(tabuleiro.jogo.jogadorDaRodada);
                         pecaCapturada.casa.peca=null;
                         pecaSelecionada.pecaCapturada = null;
+                        if (this.ataqueObrigatorio()) {
+                            alert("Captura adicional disponível, você deve continuar a capturar.");
+                            return;
+                        } else {
+                            this.tabuleiro.jogo.mudaJogador();
+                        }
                     }
                 }
                 else if(pecaSelecionada.tipoMovimento==TipoMovimento.DIAGONAL) {
                     this.setPeca(tabuleiro.jogo.jogadorDaRodada.pecaSelecionada);
+                    this.tabuleiro.jogo.mudaJogador();
                 }
                 else{
                     alert("Erro: Tipo de movimento não definido");
                 }
-            }else{
+            }
+            else{
                 alert('Movimento inválido');
                 return;
             }
@@ -181,8 +201,45 @@ class Casa{
         }
     }
 
+    ataqueObrigatorio() {
+        for (let a in this.tabuleiro.casas) {
+            for (let b in this.tabuleiro.casas[a]) {
+                a = parseInt(a);
+                b = parseInt(b);
+                try {
+                    if (this.tabuleiro.casas[a][b].style.borderColor == "yellow") {
+                        if (
+                            (a - 1 >= 0 && b - 1 >= 0 && this.tabuleiro.casas[a - 1][b - 1].style.borderColor == "red") ||
+                            (a - 1 >= 0 && b + 1 < this.tabuleiro.casas[a].length && this.tabuleiro.casas[a - 1][b + 1].style.borderColor == "red") ||
+                            (a + 1 < this.tabuleiro.casas.length && b - 1 >= 0 && this.tabuleiro.casas[a + 1][b - 1].style.borderColor == "red") ||
+                            (a + 1 < this.tabuleiro.casas.length && b + 1 < this.tabuleiro.casas[a].length && this.tabuleiro.casas[a + 1][b + 1].style.borderColor == "red")
+                        ) {
+                            if (a - 1 >= 0 && b - 1 >= 0 && this.tabuleiro.casas[a - 1][b - 1].style.borderColor == "green") {
+                                this.tabuleiro.casas[a - 1][b - 1].style.borderColor = "";
+                            }
+                            if (a - 1 >= 0 && b + 1 < this.tabuleiro.casas[a].length && this.tabuleiro.casas[a - 1][b + 1].style.borderColor == "green") {
+                                this.tabuleiro.casas[a - 1][b + 1].style.borderColor = "";
+                            }
+                            if (a + 1 < this.tabuleiro.casas.length && b - 1 >= 0 && this.tabuleiro.casas[a + 1][b - 1].style.borderColor == "green") {
+                                this.tabuleiro.casas[a + 1][b - 1].style.borderColor = "";
+                            }
+                            if (a + 1 < this.tabuleiro.casas.length && b + 1 < this.tabuleiro.casas[a].length && this.tabuleiro.casas[a + 1][b + 1].style.borderColor == "green") {
+                                this.tabuleiro.casas[a + 1][b + 1].style.borderColor = "";
+                            }
+                            return true; // Existe pelo menos um movimento de captura obrigatório
+                        }
+                    }
+                } catch (error) { }
+            }
+        }
+        return false; // Não existe movimento de captura obrigatório
+    }
+
     movimentoValido(){
         var pecaSelecionada = this.tabuleiro.jogo.jogadorDaRodada.pecaSelecionada;
+        if(pecaSelecionada.isDama) {
+            pecaSelecionada.tipoMovimento = TipoMovimento.DIAGONAL;
+        }
         if(this.casaJaPossuiUmaPca()){
             return false;             
         }
@@ -194,9 +251,6 @@ class Casa{
             return false;
         }
 
-        if(pecaSelecionada.isDama) {
-            pecaSelecionada.tipoMovimento = TipoMovimento.DIAGONAL;
-        }
         
         var linhaAtual = casaAtual.linha;
         var colunaAtual = casaAtual.coluna;
@@ -204,6 +258,8 @@ class Casa{
         var colunaFutura = this.coluna;
         var movimentoValido = false;
         var tamanhoDoPasso = 1;
+
+        console.log(pecaSelecionada)
         
         movimentoValido = this.passoValido(linhaAtual,linhaFutura,colunaAtual,colunaFutura,tamanhoDoPasso);
         
@@ -216,6 +272,7 @@ class Casa{
             }
             if (pecaSelecionada.isDama == false && this.tabuleiro.jogo.jogadorDaRodada == this.tabuleiro.jogo.jogadorVermelhas && linhaAtual < linhaFutura) {
                 alert("Movimento invalido");
+
                 return false;
             }
         }   
@@ -223,30 +280,39 @@ class Casa{
             tamanhoDoPasso = 2;//valida tentativa de captura
             if(pecaSelecionada.isDama == true) {
                 if(pecaSelecionada.jogadorDonoDaPeca.cor == "vermelha") {
-                    tamanhoDoPasso = linhaAtual-linhaFutura;
-                } else {
-                    tamanhoDoPasso = linhaAtual-linhaFutura;
+                    tamanhoDoPasso = Math.abs(linhaFutura - linhaAtual);
+                } 
+                if(pecaSelecionada.jogadorDonoDaPeca.cor == "preta") {
+                    tamanhoDoPasso = Math.abs(linhaFutura - linhaAtual);
                 }
-                
-                console.log(tamanhoDoPasso)
             }
             movimentoValido = this.passoValido(linhaAtual,linhaFutura,colunaAtual,colunaFutura,tamanhoDoPasso);
             if(movimentoValido){
                 
                 const casa = this.selecionaCasaComPecaQueSeraCapturada(linhaAtual,linhaFutura,colunaAtual,colunaFutura);
-                if(casa.vazia()){
-                    movimentoValido = false;
-                }else{
-                    pecaSelecionada.tipoMovimento=TipoMovimento.CAPTURA;
-                    pecaSelecionada.pecaCapturada = casa.peca;
+                if(casa != undefined) {
+                    if(casa.vazia() && pecaSelecionada.isDama) {
+                        movimentoValido = true;
+                        pecaSelecionada.tipoMovimento = TipoMovimento.DIAGONAL;
+                    }
+                    else if(casa.vazia() && !pecaSelecionada.isDama){
+                        movimentoValido = true;
+                    }else{
+                        pecaSelecionada.tipoMovimento=TipoMovimento.CAPTURA;
+                        pecaSelecionada.pecaCapturada = casa.peca;
+                    }
                 }
+                
+                
             }
         }else{
             pecaSelecionada.tipoMovimento=TipoMovimento.SIMPLES;
+            
         }
 
         if (this.tabuleiro.jogo.jogadorDaRodada == this.tabuleiro.jogo.jogadorVermelhas && this.linha === 0) {
             console.log("Peça virou dama");
+            this.tabuleiro.jogo.jogadorDaRodada.pecaSelecionada.tipoMovimento = TipoMovimento.SIMPLES;
 
             if(this.tabuleiro.jogo.jogadorDaRodada.pecaSelecionada.pecaCapturada) {
                 const pecaCapturada = pecaSelecionada.pecaCapturada;
@@ -254,14 +320,16 @@ class Casa{
                 pecaCapturada.span.remove()
                 this.tabuleiro.jogo.aumentaPlacar(tabuleiro.jogo.jogadorDaRodada);
                 pecaCapturada.casa.peca=null;
+                this.tabuleiro.jogo.jogadorDaRodada.pecaSelecionada.tipoMovimento = TipoMovimento.CAPTURA;
+
             }
 
             this.tabuleiro.jogo.jogadorDaRodada.pecaSelecionada.isDama = true;
-            this.tabuleiro.jogo.jogadorDaRodada.pecaSelecionada.tipoMovimento = TipoMovimento.DIAGONAL;
         }
 
         if(this.tabuleiro.jogo.jogadorDaRodada == this.tabuleiro.jogo.jogadorPretas && this.linha === 7) {
             console.log("Peça virou dama")
+            this.tabuleiro.jogo.jogadorDaRodada.pecaSelecionada.tipoMovimento = TipoMovimento.SIMPLES;
 
             if(this.tabuleiro.jogo.jogadorDaRodada.pecaSelecionada.pecaCapturada) {
                 const pecaCapturada = pecaSelecionada.pecaCapturada;
@@ -269,10 +337,18 @@ class Casa{
                 pecaCapturada.span.remove()
                 this.tabuleiro.jogo.aumentaPlacar(tabuleiro.jogo.jogadorDaRodada);
                 pecaCapturada.casa.peca=null;
+                this.tabuleiro.jogo.jogadorDaRodada.pecaSelecionada.tipoMovimento = TipoMovimento.CAPTURA;
+
             }
 
             this.tabuleiro.jogo.jogadorDaRodada.pecaSelecionada.isDama = true;
-            this.tabuleiro.jogo.jogadorDaRodada.pecaSelecionada.tipoMovimento = TipoMovimento.DIAGONAL;
+        }
+
+        if (this.ataqueObrigatorio()) {
+            if (!pecaSelecionada.tipoMovimento === TipoMovimento.CAPTURA) {
+                alert("Movimento inválido, um ataque é obrigatório!");
+                return false;
+            }
         }
         return movimentoValido;
     }
@@ -301,17 +377,49 @@ class Casa{
     }
 
     selecionaCasaComPecaQueSeraCapturada(linhaAtual, linhaFutura, colunaAtual, colunaFutura){
-        if (linhaAtual + 2 == linhaFutura && colunaAtual + 2 == colunaFutura) {
-            return this.tabuleiro.casas[linhaAtual + 1][colunaAtual + 1];
-        } else if (linhaAtual + 2 == linhaFutura && colunaAtual - 2 == colunaFutura) {
-            return this.tabuleiro.casas[linhaAtual + 1][colunaAtual - 1];
-        } else if (linhaAtual - 2 == linhaFutura && colunaAtual - 2 == colunaFutura) {
-            return this.tabuleiro.casas[linhaAtual - 1][colunaAtual - 1];
-        } else if (linhaAtual - 2 == linhaFutura && colunaAtual + 2 == colunaFutura) {
-            return this.tabuleiro.casas[linhaAtual - 1][colunaAtual + 1];
-        }else{
+        if(!this.tabuleiro.jogo.jogadorDaRodada.pecaSelecionada.isDama) {
+            if (linhaAtual + 2 == linhaFutura && colunaAtual + 2 == colunaFutura) {
+                return this.tabuleiro.casas[linhaAtual + 1][colunaAtual + 1];
+            } else if (linhaAtual + 2 == linhaFutura && colunaAtual - 2 == colunaFutura) {
+                return this.tabuleiro.casas[linhaAtual + 1][colunaAtual - 1];
+            } else if (linhaAtual - 2 == linhaFutura && colunaAtual - 2 == colunaFutura) {
+                return this.tabuleiro.casas[linhaAtual - 1][colunaAtual - 1];
+            } else if (linhaAtual - 2 == linhaFutura && colunaAtual + 2 == colunaFutura) {
+                return this.tabuleiro.casas[linhaAtual - 1][colunaAtual + 1];
+            }else{
+                return null;
+            }
+        } else {
+            if (linhaAtual < linhaFutura && colunaAtual < colunaFutura) {
+            for (let i = 1; i < Math.abs(linhaFutura - linhaAtual); i++) {
+                if (this.tabuleiro.casas[linhaAtual + i][colunaAtual + i].peca != null) {
+                    return this.tabuleiro.casas[linhaAtual + i][colunaAtual + i];
+                }
+            }
+        } else if (linhaAtual < linhaFutura && colunaAtual > colunaFutura) {
+            for (let i = 1; i < Math.abs(linhaFutura - linhaAtual); i++) {
+                if (this.tabuleiro.casas[linhaAtual + i][colunaAtual - i].peca != null) {
+                    return this.tabuleiro.casas[linhaAtual + i][colunaAtual - i];
+                }
+            }
+        } else if (linhaAtual > linhaFutura && colunaAtual > colunaFutura) {
+            for (let i = 1; i < Math.abs(linhaFutura - linhaAtual); i++) {
+                if (this.tabuleiro.casas[linhaAtual - i][colunaAtual - i].peca != null) {
+                    return this.tabuleiro.casas[linhaAtual - i][colunaAtual - i];
+                }
+            }
+        } else if (linhaAtual > linhaFutura && colunaAtual < colunaFutura) {
+            for (let i = 1; i < Math.abs(linhaFutura - linhaAtual); i++) {
+                if (this.tabuleiro.casas[linhaAtual - i][colunaAtual + i].peca != null) {
+                    return this.tabuleiro.casas[linhaAtual - i][colunaAtual + i];
+                }
+            }
+        } else {
             return null;
         }
+            
+        }
+        
     }
 
 
@@ -413,6 +521,11 @@ jogo.inicializa();
 function voltarParaInicio() {
     window.location.href = "index.php"; // Redireciona para a página do jogo
 }
+
+function reiniciarJogo() {
+    location.reload();
+}
+
 
 </script>
 <script src="horario.js" type="text/javascript"></script>

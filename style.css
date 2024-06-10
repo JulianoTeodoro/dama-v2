@@ -139,3 +139,16 @@
     align-items: center;
     color: black;
 }
+
+#reiniciar {
+    position: fixed; /* Posicionamento absoluto para permitir a movimentação */
+    top: 10px; /* Distância do topo */
+    left: 10px; /* Distância da esquerda */
+    padding: 10px 20px; /* Espaçamento interno do botão */
+    background-color: #007bff; /* Cor de fundo do botão */
+    color: white; /* Cor do texto */
+    border: none; /* Sem borda */
+    border-radius: 5px; /* Bordas arredondadas */
+    cursor: pointer; /* Cursor muda para indicar que é clicável */
+    font-size: 16px; /* Tamanho da fonte */
+}
