@@ -1,17 +1,19 @@
 /* Estilizando o tabuleiro */
+
+
 #tabuleiro {
     display: grid;
+    background-color: #f0f0f0;
     grid-template-columns: repeat(8, 1fr);
     width: 640px;
     height: 640px;
-    border: 20px solid #8b0000;
+    border: 20px solid #00BFFF;
     margin: 20px auto;
     gap: 0; /* Remove qualquer espaço entre as casas */
 }
 
 /* Estilizando os jogadores */
 #jogador1 {
-    background-color: white;
     color: black;
     padding: 10px;
     text-align: center;
@@ -22,7 +24,6 @@
 }
 
 #jogador2 {
-    background-color: red;
     color: aliceblue;
     padding: 10px;
     text-align: center;
@@ -151,4 +152,5 @@
     border-radius: 5px; /* Bordas arredondadas */
     cursor: pointer; /* Cursor muda para indicar que é clicável */
     font-size: 16px; /* Tamanho da fonte */
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }

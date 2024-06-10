@@ -5,6 +5,29 @@
     <meta charset="UTF-8">
     <title>Tabuleiro de Damas</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+
+        body {
+            background-color: #4169E1;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+
+        }
+
+        #reiniciar{
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            font-size: 20px;
+
+        }
+
+        #voltarInicio{
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            font-size: 20px;
+        }
+
+        #tabuleiro{
+            border: 20px solid #00BFFF;
+        }
+    </style>
 </head>
 
 <body>
@@ -169,7 +192,6 @@ class Casa{
                             alert("Captura adicional disponível, você deve continuar a capturar.");
                             return;
                         } else {
-                            this.tabuleiro.jogo.mudaJogador();
                         }
                     }
                 }
@@ -390,7 +412,8 @@ class Casa{
                 return null;
             }
         } else {
-            if (linhaAtual < linhaFutura && colunaAtual < colunaFutura) {
+
+        if (linhaAtual < linhaFutura && colunaAtual < colunaFutura) {
             for (let i = 1; i < Math.abs(linhaFutura - linhaAtual); i++) {
                 if (this.tabuleiro.casas[linhaAtual + i][colunaAtual + i].peca != null) {
                     return this.tabuleiro.casas[linhaAtual + i][colunaAtual + i];
